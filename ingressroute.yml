@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kibana
+  namespace: elk
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`test.com`)
+      kind: Rule
+      services:
+        - name: elk-kibana-kb-http
+          port: 5601
+          serversTransport: kibana-transport
+
+  tls:
+    secretName: test.com
