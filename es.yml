@@ -1,0 +1,35 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-elk
+  namespace: elk
+spec:
+  version: 8.15.0
+  http:
+    service:
+      spec:
+        type: LoadBalancer
+  nodeSets:
+    - name: elk
+      count: 1
+      # Optional: Uncomment and set Elasticsearch configurations
+      # config:
+      #   vm.max_map_count: 524288
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              env:
+                - name: network.host
+                  value: "0.0.0.0"
+              resources:
+                requests:
+                  memory: "5Gi"
+                  cpu: "100m"
+                limits:
+                  memory: "7Gi"
+                  cpu: "2"
+          volumes:
+           - name: elasticsearch-data
+             emptyDir: {}
+
