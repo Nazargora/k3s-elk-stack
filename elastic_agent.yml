@@ -1,0 +1,50 @@
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: agent
+  namespace:  elk
+spec:
+  version: 8.15.0
+  daemonSet:
+    podTemplate:
+      metadata:
+        labels:
+          app.kubernetes.io/name: gora-agent
+      spec:
+        serviceAccountName: elastic-agent
+        automountServiceAccountToken: true
+        securityContext:
+           runAsUser: 0
+        containers:
+        - name: agent
+          ports:
+            - containerPort: 9528
+              name: elastic-agentsv
+          resources:
+            requests:
+               memory: "4Gi"  # Requesting 4 GiB of memory
+               cpu: "1000m"   # Requesting 2 CPU (2000 millicores)
+            limits:
+               memory: "5Gi"  # Setting the limit to 5 GiB of memory
+               cpu: "1500m"
+          volumeMounts:
+          - name: elastic-ca
+            mountPath: /etc/ssl/certs/elastic-ca.crt
+            subPath: elastic-ca.crt
+            readOnly: true
+        volumes:
+        - name: elastic-ca
+          secret:
+            secretName: es-elk-es-transport-ca-internal
+  config:
+    id: 2d0e66d8-5e9a-4b9b-a326-bbcfce633e83 #this and belove is from extra  integration from watchguard firebox in kibana 
+    revision: 2
+    outputs:
+      default:
+        type: elasticsearch
+        hosts:
+          - 'https://es-elk-es-http.elk.svc:9200/'
+               api_key: 'f7Ka6JIBwxuzCMKDLCPbrp:gK9zDKVDLCZKCy5F0ncTA'
+        preset: balanced
+        ssl:
+          verification_mode: "none"
