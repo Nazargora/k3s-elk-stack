@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`test.com`)
+    - match: Host(`kibana.demoapps.win`)
       kind: Rule
       services:
         - name: elk-kibana-kb-http
